@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Columns\IdColumn;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -13,30 +14,43 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Packaging
 {
+	use IdColumn;
 
-    #[ORM\Id]
-    #[ORM\Column(type: Types::INTEGER)]
-    #[ORM\GeneratedValue]
-    private ?int $id = null;
+	#[ORM\Column(type: Types::FLOAT)]
+	private float $width;
+	#[ORM\Column(type: Types::FLOAT)]
+	private float $height;
+	#[ORM\Column(type: Types::FLOAT)]
+	private float $length;
+	#[ORM\Column(type: Types::FLOAT)]
+	private float $maxWeight;
 
-    #[ORM\Column(type: Types::FLOAT)]
-    private float $width;
+	public function __construct(float $width, float $height, float $length, float $maxWeight)
+	{
+		$this->width = $width;
+		$this->height = $height;
+		$this->length = $length;
+		$this->maxWeight = $maxWeight;
+	}
 
-    #[ORM\Column(type: Types::FLOAT)]
-    private float $height;
+	public function getWidth(): float
+	{
+		return $this->width;
+	}
 
-    #[ORM\Column(type: Types::FLOAT)]
-    private float $length;
+	public function getHeight(): float
+	{
+		return $this->height;
+	}
 
-    #[ORM\Column(type: Types::FLOAT)]
-    private float $maxWeight;
+	public function getLength(): float
+	{
+		return $this->length;
+	}
 
-    public function __construct(float $width, float $height, float $length, float $maxWeight)
-    {
-        $this->width = $width;
-        $this->height = $height;
-        $this->length = $length;
-        $this->maxWeight = $maxWeight;
-    }
+	public function getMaxWeight(): float
+	{
+		return $this->maxWeight;
+	}
 
 }

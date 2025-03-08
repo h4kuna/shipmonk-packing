@@ -1,0 +1,38 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types = 1);
+
+$peaces = rand(0, 8);
+
+final class RandomSize
+{
+	public static function length(): float
+	{
+		return self::randomFloat(5);
+	}
+
+	public static function weight(): float
+	{
+		return self::randomFloat(3);
+	}
+
+	private static function randomFloat(int $limit, int $precision = 1): float
+	{
+		$x = 10 ** $precision;
+
+		return rand($x, $limit * $x) / $x;
+	}
+}
+
+$goods = [];
+for ($i = 0; $i < $peaces; ++$i) {
+	$goods[] = [
+		'width' => RandomSize::length(),
+		'height' => RandomSize::length(),
+		'length' => RandomSize::length(),
+		'weight' => RandomSize::weight(),
+	];
+}
+
+echo json_encode($goods) . PHP_EOL;

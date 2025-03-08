@@ -1,0 +1,35 @@
+services:
+	psrHttp.main.client: GuzzleHttp\Client([timeout: 5.0]) # automaticky nastaveno autowire: false
+	db.connection:
+		factory: Doctrine\DBAL\DriverManager::getConnection([
+			driver: pdo_mysql,
+			host: shipmonk-packing-mysql,
+			user: root,
+			password: secret,
+			dbname: packing,
+		])
+
+	- Tracy\Bridges\Psr\TracyToPsrLoggerAdapter
+	- Nette\Schema\Processor
+	- App\Goods\RequestToItemsCollection
+	- GuzzleHttp\Psr7\HttpFactory
+	-
+		factory: Doctrine\ORM\ORMSetup::createAttributeMetadataConfiguration([%appDir%], %debugMode%)
+		setup:
+			- setNamingStrategy(Doctrine\ORM\Mapping\UnderscoreNamingStrategy())
+
+	-
+		factory: Doctrine\ORM\EntityManager()
+
+	- App\Api\TreeDBinPacking\Entities\Credentials(%3dbinpacking.username%, %3dbinpacking.apiKey%)
+
+	psrHttp.middlewares:
+		arguments:
+			-
+				- @psrHttp.middleware.cacheResponse
+				- @psrHttp.middleware.store
+
+	psrHttp.config.manager:
+		setup:
+			- addDefault(StrictPhp\HttpClients\Clients\Store\StoreConfig(serialized: false))
+			- addDefault(StrictPhp\HttpClients\Clients\CacheResponse\CacheResponseConfig(enabled: %responseCache%))

@@ -1,0 +1,21 @@
+parameters:
+	logDir: %appDir%/../log
+	3dbinpacking:
+		apiKey:
+		username:
+	responseCache: false
+
+extensions:
+	psrHttp: StrictPhp\HttpClients\Nette\DI\HttpClientsExtension(%tempDir%/http, %logDir%/http)
+
+search:
+	-
+		in: %appDir%
+		exclude:
+			classes:
+				- *\Entities\*
+				- *\Entity\*
+				- *Entity
+				- *Collection
+				- App\Api\TreeDBinPacking\Entities\Credentials
+			implements: \Throwable
