@@ -6,19 +6,20 @@ namespace App\Api\TreeDBinPacking\Endpoints;
 
 use App\Api\Exceptions\InvalidResponseException;
 use App\Api\Exceptions\ResponseException;
+use App\Api\TreeDBinPacking\Caching\PackagesToArrayCache;
 use App\Api\TreeDBinPacking\Client;
 use App\Api\TreeDBinPacking\Contracts\PackagesToArrayContract;
-use App\Api\TreeDBinPacking\Exceptions\TooManyPackagesException;
+use App\Api\TreeDBinPacking\Exceptions\CouldNotPackToOnePackageException;
 use App\Contracts\FindPackagingQueryContract;
 use App\Entity\Packaging;
-use App\Goods\ItemsCollection;
+use App\Goods\Collections\ItemsCollection;
 use Psr\Http\Client\ClientExceptionInterface;
 
 final readonly class PackAShipmentEndpoint
 {
 	public function __construct(
 		private Client $client,
-		private PackagesToArrayContract $packagesToArray,
+		private PackagesToArrayCache $packagesToArray,
 		private FindPackagingQueryContract $findPackagingQuery,
 	) {}
 
@@ -30,13 +31,13 @@ final readonly class PackAShipmentEndpoint
 	{
 		$response = $this->client->request(
 			'/packer/packIntoMany',
-			['bins' => $this->packagesToArray->transform(), 'items' => self::prepareItems($items)],
+			['bins' => $this->packagesToArray->execute(), 'items' => self::prepareItems($items)],
 		);
 
 		$packed = isset($response['bins_packed']) && is_array($response['bins_packed']) ? $response['bins_packed'] : [];
 		$count = count($packed);
 		if ($count !== 1) {
-			throw new TooManyPackagesException("Packages: $count.");
+			throw new CouldNotPackToOnePackageException("Packages: $count.");
 		} elseif (
 			isset($packed[0]['bin_data']['id']) === false // @phpstan-ignore-line
 			|| is_int($packed[0]['bin_data']['id']) === false) {

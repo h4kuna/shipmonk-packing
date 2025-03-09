@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Goods\Actions;
 
-use App\Goods\ItemEntity;
+use App\Goods\Entities\ItemEntity;
 
 final class SortItemFieldsAction
 {

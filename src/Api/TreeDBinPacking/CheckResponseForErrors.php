@@ -18,11 +18,11 @@ final class CheckResponseForErrors
 	 */
 	public function execute(array $responseData): void
 	{
-		if ($responseData['response']['errors'] !== []) {
-			if ($responseData['response']['not_packed_items'] !== []) {
-				throw new CouldNotPackToOnePackageException(ErrorMessage::join($responseData['response']['errors']));
-			}
+		if ($responseData['response']['not_packed_items'] !== []) {
+			throw new CouldNotPackToOnePackageException(ErrorMessage::join($responseData['response']['errors']));
+		}
 
+		if ($responseData['response']['errors'] !== []) {
 			throw new TreeDBinPackingResponseErrorsException(
 				$responseData['response']['errors'],
 				$responseData['response']['status'],

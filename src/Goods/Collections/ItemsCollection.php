@@ -2,8 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace App\Goods;
+namespace App\Goods\Collections;
 
+use App\Goods\Entities\ItemEntity;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;

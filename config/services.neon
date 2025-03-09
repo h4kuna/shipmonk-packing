@@ -11,7 +11,7 @@ services:
 
 	- Tracy\Bridges\Psr\TracyToPsrLoggerAdapter
 	- Nette\Schema\Processor
-	- App\Goods\RequestToItemsCollection
+	- App\Goods\Collections\RequestToItemsCollection
 	- GuzzleHttp\Psr7\HttpFactory
 	-
 		factory: Doctrine\ORM\ORMSetup::createAttributeMetadataConfiguration([%appDir%], %debugMode%)
@@ -22,7 +22,7 @@ services:
 		factory: Doctrine\ORM\EntityManager()
 
 	- App\Api\TreeDBinPacking\Entities\Credentials(%3dbinpacking.username%, %3dbinpacking.apiKey%)
-
+	- Nette\Bridges\Psr\PsrCacheAdapter
 	psrHttp.middlewares:
 		arguments:
 			-

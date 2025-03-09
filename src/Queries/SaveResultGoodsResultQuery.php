@@ -8,7 +8,7 @@ use App\Entity\Goods;
 use App\Entity\Groups;
 use App\Entity\Packaging;
 use App\Entity\PackagingGroupGood;
-use App\Goods\ItemsCollection;
+use App\Goods\Collections\ItemsCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class SaveResultGoodsResultQuery

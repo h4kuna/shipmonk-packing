@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Queries\Helpers;
 
-use App\Goods\ItemsCollection;
+use App\Goods\Collections\ItemsCollection;
 use Doctrine\ORM\QueryBuilder;
 
 final class GoodsHelper

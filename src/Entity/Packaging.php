@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
  * Warehouse workers pack a set of products for a given order into one of these boxes.
  */
 #[ORM\Entity]
+#[ORM\UniqueConstraint(
+	columns: ['maxWeight', 'height', 'width', 'length']
+)]
 class Packaging
 {
 	use IdColumn;

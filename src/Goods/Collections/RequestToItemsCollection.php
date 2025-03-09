@@ -2,10 +2,11 @@
 
 declare(strict_types = 1);
 
-namespace App\Goods;
+namespace App\Goods\Collections;
 
 use App\Goods\Actions\SortItemFieldsAction;
 use App\Goods\Actions\SortItemsAction;
+use App\Goods\Entities\ItemEntity;
 use Nette\Schema\Expect;
 use Nette\Schema\Processor;
 use Nette\Schema\ValidationException;

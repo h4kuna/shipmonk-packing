@@ -5,13 +5,9 @@ declare(strict_types = 1);
 namespace App\Queries;
 
 use App\Entity\Goods;
-use App\Entity\Groups;
-use App\Entity\PackagingGroupGood;
-use App\Goods\ItemsCollection;
+use App\Goods\Collections\ItemsCollection;
 use App\Queries\Helpers\GoodsHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Expr\Join;
-use Psr\Log\LoggerInterface;
 
 final readonly class FindExistingGoodsQuery
 {

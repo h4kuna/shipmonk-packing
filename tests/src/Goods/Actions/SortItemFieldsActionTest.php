@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Tests\Goods\Actions;
 
 use App\Goods\Actions\SortItemFieldsAction;
-use App\Goods\ItemEntity;
+use App\Goods\Entities\ItemEntity;
 use Closure;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;

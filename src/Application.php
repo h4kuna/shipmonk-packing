@@ -4,12 +4,13 @@ declare(strict_types = 1);
 
 namespace App;
 
-use App\Actions\HavePackageForGoodsAction;
 use App\Api\Exceptions\ResponseException;
 use App\Api\TreeDBinPacking\Endpoints\PackAShipmentEndpoint;
 use App\Api\TreeDBinPacking\Exceptions\CouldNotPackToOnePackageException;
-use App\Api\TreeDBinPacking\Exceptions\TooManyPackagesException;
-use App\Goods\RequestToItemsCollection;
+use App\Contracts\FindOptimalPackageQueryContract;
+use App\Goods\Actions\FindMaxPackageWeightAction;
+use App\Goods\Collections\RequestToItemsCollection;
+use App\Goods\Factories\MetaDataItemFactory;
 use App\Http\ResponseFactory;
 use App\Queries\SaveResultGoodsResultQuery;
 use Nette\Schema\ValidationException;
@@ -24,35 +25,41 @@ final readonly class Application
 {
 	public function __construct(
 		private RequestToItemsCollection $requestToItemsCollection,
-		private HavePackageForGoodsAction $havePackageForGoodsAction,
+		private FindOptimalPackageQueryContract $findOptimalPackageQuery,
 		private ResponseFactory $responseFactory,
 		private PackAShipmentEndpoint $packAShipmentEndpoint,
 		private SaveResultGoodsResultQuery $saveResultGoodsResultQuery,
 		private LoggerInterface $logger,
+		private MetaDataItemFactory $metaDataItemFactory,
+		private FindMaxPackageWeightAction $findMaxPackageWeightAction,
 	) {}
 
 	public function run(RequestInterface $request): ResponseInterface
 	{
 		try {
-			$data = $this->requestToItemsCollection->transform($request);
+			$items = $this->requestToItemsCollection->transform($request);
 		} catch (JsonException) {
 			return $this->responseFactory->createErrorResponse('Invalid JSON format');
 		} catch (ValidationException $e) {
 			return $this->responseFactory->createErrorResponse('Validation failed: ' . $e->getMessage());
 		}
 
-		try {
-			$packageFromApi = $this->packAShipmentEndpoint->request($data);
+		$metaDataItems = $this->metaDataItemFactory->create($items);
 
-			$this->saveResultGoodsResultQuery->execute($packageFromApi, $data);
+		if ($metaDataItems->weight > $this->findMaxPackageWeightAction->execute()) {
+			return $this->responseFactory->createErrorResponse(
+				'The weight of the packages is too heavy, we don\'t have the boxes for it.',
+			);
+		}
+
+		try {
+			$packageFromApi = $this->packAShipmentEndpoint->request($items);
+
+			$this->saveResultGoodsResultQuery->execute($packageFromApi, $items);
 
 			return $this->responseFactory->createSuccess($packageFromApi);
-		} catch (CouldNotPackToOnePackageException $e) {
-			return $this->responseFactory->createErrorResponse($e->getMessage());
-		} catch (TooManyPackagesException) {
-			return $this->responseFactory->createErrorResponse(
-				'The goods do not fit into one package.',
-			);
+		} catch (CouldNotPackToOnePackageException) {
+			return $this->responseFactory->createErrorResponse('Cannot be packed into one package.');
 		} catch (ClientExceptionInterface|ResponseException $e) {
 			$this->logger->error($e->getMessage(), ['exception' => $e]);
 		} catch (Throwable $e) {
@@ -60,7 +67,7 @@ final readonly class Application
 			// todo return message "server is down" or return any package?
 		}
 
-		$package = $this->havePackageForGoodsAction->execute($data);
+		$package = $this->findOptimalPackageQuery->execute($metaDataItems);
 		if ($package === null) {
 			return $this->responseFactory->createErrorResponse(
 				'Is too heavy or package must be bigger than we have.',

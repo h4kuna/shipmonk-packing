@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Goods;
+namespace App\Goods\Entities;
 
 final class ItemEntity
 {
