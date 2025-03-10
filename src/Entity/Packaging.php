@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Entity]
 #[ORM\UniqueConstraint(
-	columns: ['maxWeight', 'height', 'width', 'length']
+	columns: ['max_weight', 'height', 'width', 'length']
 )]
 class Packaging
 {
